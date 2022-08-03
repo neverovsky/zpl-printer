@@ -1,10 +1,25 @@
-console.log('Load background.js');
+const DEVELOPER_MODE = !('update_url' in chrome.runtime.getManifest());
+
+if (DEVELOPER_MODE) {
+    console.log('Load background.js');
+}
+
 
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-    console.log(message);
+    if (DEVELOPER_MODE) {
+        console.log(message);
+    }
+
+    if (message.cmd === 'version') {
+        const manifestData = chrome.runtime.getManifest();
+        sendResponse({cmd: 'version', value: manifestData.version});
+        return true;
+    }
 
     if (message.cmd === 'print') {
-        console.log('printing');
+        if (DEVELOPER_MODE) {
+            console.log('printing');
+        }
         fetch(message.printer, {
             method: 'POST',
             mode: 'cors',
@@ -12,10 +27,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
             body: message.raw
         }).catch(function () {
         }).finally(function () {
-            console.log('printed');
-            sendResponse({status: 'success'});
+            if (DEVELOPER_MODE) {
+                console.log('printed');
+            }
+            sendResponse({cmd: 'status', value: 'success'});
         })
-
     }
     return true;
 });
