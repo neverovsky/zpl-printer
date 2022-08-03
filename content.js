@@ -1,27 +1,46 @@
 const DEVELOPER_MODE = !('update_url' in chrome.runtime.getManifest());
-const FROM_ZPL_CODE = 'from_zpl_ext';
 
 if (DEVELOPER_MODE) {
-    console.log('Load content.js', chrome.runtime.getManifest());
+    console.log('Load content.js');
 }
-
-window.postMessage({
-    type: FROM_ZPL_CODE,
-    cmd: 'version',
-    value: chrome.runtime.getManifest().version
-});
+sendResponse({cmd: 'version', value: chrome.runtime.getManifest().version});
 
 window.addEventListener("message", receiveMessage, false);
 
 
 function receiveMessage(event) {
     if (event.data && event.data.type && event.data.type == 'zpl') {
-        chrome.runtime.sendMessage(event.data, function (response) {
+        const message = event.data;
+        if (message.cmd === 'version') {
+            const manifestData = chrome.runtime.getManifest();
+            sendResponse({cmd: 'version', value: manifestData.version});
+            return true;
+        }
+
+        if (message.cmd === 'print') {
             if (DEVELOPER_MODE) {
-                console.log(response);
+                console.log('printing');
             }
-            response.type = FROM_ZPL_CODE;
-            window.postMessage(response);
-        });
+            fetch(message.printer, {
+                method: 'POST',
+                mode: 'cors',
+                cache: 'no-cache',
+                body: message.raw
+            }).catch(function () {
+            }).finally(function () {
+                if (DEVELOPER_MODE) {
+                    console.log('printed');
+                }
+                sendResponse({cmd: 'status', value: 'success'});
+            })
+        }
     }
+}
+
+function sendResponse(response) {
+    if (DEVELOPER_MODE) {
+        console.log(response);
+    }
+    response.type = 'from_zpl_ext';
+    window.postMessage(response);
 }

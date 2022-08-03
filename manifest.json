@@ -6,25 +6,15 @@
   "manifest_version": 3,
   "author": "Alexander Neverovsky",
   "homepage_url": "https://github.com/neverovsky/zpl-printer",
-  "background": {
-    "service_worker": "background.js"
-  },
   "content_scripts": [
     {
       "matches": [
-        "<all_urls>"
+        "*://*/"
       ],
       "js": [
         "content.js"
       ]
     }
-  ],
-  "permissions": [
-    "background",
-    "activeTab"
-  ],
-  "host_permissions": [
-    "<all_urls>"
   ],
   "offline_enabled": true
 }
