@@ -1,7 +1,7 @@
 {
   "name": "ZPL printer / JS provider",
   "description": "Allow to send / print ZPL format commands to network .ZPL printer",
-  "version": "1.1",
+  "version": "1.1.1",
   "icons": {"128": "128.png" },
   "manifest_version": 3,
   "author": "Alexander Neverovsky",
@@ -9,7 +9,7 @@
   "content_scripts": [
     {
       "matches": [
-        "*://*/"
+        "*://*/*"
       ],
       "js": [
         "content.js"
