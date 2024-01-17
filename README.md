@@ -5,7 +5,7 @@ Allow to print any raw data from JavaScript at any opened page directly to any .
 
 ##Usage:
 ###Print barcode 1234567
-```
+```js
 window.postMessage(
 {
     type: "zpl", 
@@ -15,7 +15,7 @@ window.postMessage(
 });
 ```
 ###Listen extension:
-```
+```js
 window.addEventListener("message", function (event){
     if (event.data && event.data.type && event.data.type == 'from_zpl_ext') {
         // receive version of extension if exists
